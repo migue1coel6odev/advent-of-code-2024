@@ -3,7 +3,7 @@ use std::{collections::HashMap, fs};
 use regex::Regex;
 
 fn main() {
-    // part_one();    
+    part_one();    
     part_two();
 }
 
