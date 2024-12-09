@@ -1,4 +1,5 @@
-use std::{fs, thread::sleep, time};
+use std::{arch::global_asm, fs, thread::sleep, time};
+
 
 fn main() {
     part_1();
@@ -65,7 +66,7 @@ fn part_2() {
             println!("Found one ");
             print_matrix(&input_matrix, current_rotation_count, Some((x, y)));
         }
-        sleep(time::Duration::from_secs(1));
+        // sleep(time::Duration::from_secs(1));
     }
 
     print_matrix(&input_matrix, current_rotation_count, None);
@@ -93,6 +94,10 @@ fn check_possible_loop(matrix: &Vec<Vec<char>>, current_pos: (usize, usize), lev
     return false;
 }
 
+// fn calculate_rotate_new_pos((x_max_index, y_max_index): (usize, usize) , (x, y): (usize, usize)) -> (usize, usize) {
+//     (y, y_max_index - x)
+// }
+
 fn rotate_90_deg_2(matrix: &Vec<Vec<char>>, (x, y): (usize, usize)) -> (Vec<Vec<char>>, (usize, usize)) {
     let mut new_matrix = Vec::new();
     for old_x in (0..matrix.get(0).unwrap().len()).rev() {
@@ -108,9 +113,9 @@ fn rotate_90_deg_2(matrix: &Vec<Vec<char>>, (x, y): (usize, usize)) -> (Vec<Vec<
         }
         new_matrix.push(temp_vec);
     }
-    let new_matrix_len = new_matrix[0].len();
-    println!("{} : {}", y , x);
-    (new_matrix, (y + 1, (new_matrix_len - x) - 2))
+    let new_matrix_len = new_matrix[0].len() - 1;
+    println!("{} + 1, {} - {} - 1", y ,new_matrix_len, x);
+    (new_matrix, (y + 1, new_matrix_len - (x - 1)))
 }
 
 fn rotate_180_deg(matrix: &Vec<Vec<char>>, current_pos: (usize, usize)) -> (Vec<Vec<char>>, (usize, usize)) {
