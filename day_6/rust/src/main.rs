@@ -9,7 +9,7 @@ fn main() {
 
     let guard_path = GuardPath::new(input);
     guard_path.calculate_guard_path();
-    guard_path.calculate_possible_guard_loops();
+    guard_path.calculate_possible_guard_loops(); // 1705
 }
 
 fn read_file() -> Vec<Vec<char>> {

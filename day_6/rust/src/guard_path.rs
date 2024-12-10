@@ -94,14 +94,9 @@ impl GuardPath {
         starting_pos: (usize, usize),
     ) -> usize {
         let mut current_orientation = Orientation::UP;
-        let mut current_position = starting_pos;
-        map[current_position.1][current_position.0] = 'X';
+        let mut current_position = starting_pos.clone();
+        let mut loop_position = HashSet::new();
 
-        let mut possible_loop_positions: HashMap<(usize, usize), HashSet<Orientation>> =
-            HashMap::new();
-        possible_loop_positions.insert(current_position, HashSet::from([Orientation::UP]));
-
-        let mut nr_loops = 0;
         loop {
             let next_pos =
                 GuardPath::get_next_position(&map, current_position, &current_orientation);
@@ -109,10 +104,6 @@ impl GuardPath {
             if let Some((next_position, next_orientation)) = next_pos {
                 current_position = next_position;
                 current_orientation = next_orientation;
-                possible_loop_positions
-                    .entry(current_position)
-                    .or_insert(HashSet::new())
-                    .insert(current_orientation.clone());
 
                 let next_pos_obs =
                     GuardPath::get_next_position(&map, current_position, &current_orientation);
@@ -123,12 +114,11 @@ impl GuardPath {
                         fake_map[obs_pos.1][obs_pos.0] = '#';
                         let it_loops = GuardPath::check_creates_loop(
                             &fake_map,
-                            current_position,
-                            current_orientation.clone(),
-                            // &mut possible_loop_positions,
+                            starting_pos.clone(),
+                            Orientation::UP,
                         );
                         if it_loops {
-                            nr_loops += 1;
+                            loop_position.insert(obs_pos);
                         }
                     }
                 }
@@ -137,7 +127,7 @@ impl GuardPath {
             }
         }
 
-        nr_loops
+        loop_position.len()
     }
 
     pub fn check_creates_loop(
