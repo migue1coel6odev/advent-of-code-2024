@@ -92,7 +92,7 @@ fn part_1(input: &Vec<Vec<char>>) {
 }
 
 fn read_file() -> Vec<Vec<char>> {
-    String::from_utf8(fs::read("test3.txt").unwrap())
+    String::from_utf8(fs::read("input.txt").unwrap())
         .unwrap()
         .split("\n")
         .map(|line| line.chars().collect())

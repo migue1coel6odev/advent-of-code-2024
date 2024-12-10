@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use crate::print_map;
+
 pub struct Antennav2 {
     frequency: char,
     positions: Vec<(usize, usize)>,
@@ -24,10 +26,12 @@ impl Antennav2 {
     }
 
     pub fn generate_antinodes(&mut self) -> &Vec<(usize, usize)> {
+        println!("poss: {}", self.positions.len());
         self.positions
             .iter()
             .enumerate()
             .for_each(|(index_a, antenna_a_pos)| {
+                self.antinodes.push(*antenna_a_pos);
                 self.positions
                     .iter()
                     .enumerate()
@@ -41,6 +45,7 @@ impl Antennav2 {
                             );
 
                             if let Some(new_vec) = antinode_pos {
+                                println!("newvec {:?}", new_vec);
                                 for node in new_vec {
                                     self.antinodes.push(node);
                                 }
@@ -77,6 +82,7 @@ impl Antennav2 {
         if let Some(x) = x {
             if let Some(y) = y {
                 if x < x_max_index && y < y_max_index {
+                    vec.push((x, y));
                     if let Some(new_vec) =
                         Antennav2::_get_antinode(x_max_index, y_max_index, &(x, y), pos_a)
                     {
@@ -85,10 +91,17 @@ impl Antennav2 {
                         }
                         return Some(vec);
                     }
+
+                    return Some(vec);
                 }
             }
         }
         return None;
+    }
+
+    pub fn print(&self){
+        println!("{}", &self);
+
     }
 }
 
