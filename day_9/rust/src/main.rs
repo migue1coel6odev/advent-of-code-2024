@@ -10,7 +10,7 @@ fn main() {
     let input = read_file();
     let mut freespace_v2 = FreeSpaceV2::new(input);
     freespace_v2.decode_disk_space();
-    freespace_v2.compact_disk_space();
+    freespace_v2.compact_disk_space_v2();
     freespace_v2.update_filesystem_checksum();
     println!("{}", freespace_v2);
 }

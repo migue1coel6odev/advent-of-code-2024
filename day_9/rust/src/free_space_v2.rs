@@ -4,6 +4,7 @@ pub struct FreeSpaceV2 {
     input: String,
     disk_space: Vec<usize>,
     compacted_space: Vec<(usize, usize)>,
+    compacted_space_v2: Vec<(Option<usize>, usize)>,
     checksum: usize,
 }
 
@@ -13,6 +14,7 @@ impl FreeSpaceV2 {
             input,
             disk_space: Vec::new(),
             compacted_space: Vec::new(),
+            compacted_space_v2: Vec::new(),
             checksum: 0,
         }
     }
@@ -80,14 +82,101 @@ impl FreeSpaceV2 {
         }
     }
 
+    pub fn compact_disk_space_v2(&mut self) {
+        let mut current_index: usize = 0;
+
+        let mut temp = self
+            .disk_space
+            .iter()
+            .enumerate()
+            .map(|(index, &size)| {
+                if index == 0 || index % 2 == 0 {
+                    let result = (Some(current_index), size);
+                    current_index += 1;
+                    return result;
+                }
+                return (None, size);
+            })
+            .collect::<Vec<(Option<usize>, usize)>>();
+
+        current_index -= 1;
+        loop {
+            let (last_index, value) = temp
+                .iter()
+                .enumerate()
+                .rev()
+                .find(|(_, val)| {
+                    if val.0.is_none() {
+                        return false;
+                    }
+                    if let Some(indd) = val.0 {
+                        if indd == current_index {
+                            current_index -= 1;
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .map(|(ind, f)| (ind, *f))
+                .unwrap();
+
+            let mut found = false;
+            let mut skip = false;
+            temp = temp
+                .iter()
+                .flat_map(|val| {
+                    if val.0.is_none() && val.1 >= value.1 && found == false && skip == false {
+                        found = true;
+                        return vec![(value.0, value.1), (None, val.1 - value.1)];
+                    }
+
+                    if let Some(v) = val.0 {
+                        if v == value.0.unwrap() {
+                            skip = true;
+                        }
+                    }
+
+                    return vec![*val];
+                })
+                .collect();
+
+            if found {
+                temp[last_index + 1] = (None, value.1);
+            }
+
+            if current_index == 1 {
+                break;
+            }
+            // println!(
+            //     "-> {:?}",
+            //     temp.iter()
+            //         .flat_map(|val| {
+            //             if val.0.is_none() {
+            //                 return vec!['.'.to_string(); val.1];
+            //             }
+            //             let value = val.0.unwrap();
+
+            //             println!(" error: {}", value);
+            //             return vec![value.to_string(); val.1];
+            //         })
+            //         .collect::<Vec<String>>()
+            //         .join("")
+            // );
+        }
+        self.compacted_space_v2 = temp.clone();
+    }
+
     pub fn update_filesystem_checksum(&mut self) {
         self.checksum = self
-            .compacted_space
+            .compacted_space_v2
             .iter()
             .flat_map(|(index, size)| vec![index; *size])
             .enumerate()
             .map(|(index, digit)| {
-                return digit * index;
+                if let Some(nr) = digit {
+                    return index * nr;
+                }
+                return 0;
             })
             .sum()
     }
@@ -108,22 +197,41 @@ impl Display for FreeSpaceV2 {
             )
             .as_str(),
         );
-        text.push_str(
-            format!(
-                "\n\n| COMPACTED DISK SPACE |\n{} ",
-                &self
-                    .compacted_space
-                    .iter()
-                    .map(|(index, size)| vec![index; *size]
-                        .iter()
-                        .map(|f| f.to_string())
-                        .collect::<Vec<_>>()
-                        .join(""))
-                    .collect::<Vec<_>>()
-                    .join("")
-            )
-            .as_str(),
-        );
+        // text.push_str(
+        //     format!(
+        //         "\n\n| COMPACTED DISK SPACE |\n{} ",
+        //         &self
+        //             .compacted_space
+        //             .iter()
+        //             .map(|(index, size)| vec![index; *size]
+        //                 .iter()
+        //                 .map(|f| f.to_string())
+        //                 .collect::<Vec<_>>()
+        //                 .join(""))
+        //             .collect::<Vec<_>>()
+        //             .join("")
+        //     )
+        //     .as_str(),
+        // );
+        // text.push_str(
+        //     format!(
+        //         "\n\n| COMPACTED DISK SPACE |\n{} ",
+        //         &self
+        //             .compacted_space_v2
+        //             .iter()
+        //             .map(|(index, size)| vec![index; *size]
+        //                 .iter()
+        //                 .map(|f| match f {
+        //                     Some(x) => x.to_string(),
+        //                     None => ".".to_string(),
+        //                 })
+        //                 .collect::<Vec<_>>()
+        //                 .join(""))
+        //             .collect::<Vec<_>>()
+        //             .join("")
+        //     )
+        //     .as_str(),
+        // );
         text.push_str(format!("\n\n| FILESYSTEM CHECKSUM |\n{} ", &self.checksum).as_str());
 
         write!(f, "{}", text)
