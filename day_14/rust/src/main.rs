@@ -44,44 +44,26 @@ fn part_2(path: &str, tiles_wide: isize, tiles_tall: isize) {
 
     loop {
         let mut robot_pos = vec![vec!['.'; tiles_wide as usize]; tiles_tall as usize];
-        let mut top_left_quad = 0;
-        let mut top_right_quad = 0;
-        let mut bottom_left_quad = 0;
-        let mut bottom_right_quad = 0;
         for robot in &robots {
             let (x, y) = &robot.pos_after(nr_iterations);
             robot_pos[*y as usize][*x as usize] = '#';
 
-            if *x < tiles_wide / 2 {
-                if *y < tiles_tall / 2 {
-                    top_left_quad += 1;
-                } else if *y > tiles_tall / 2 {
-                    bottom_left_quad += 1;
-                }
-            } else if *x > tiles_wide / 2 {
-                if *y < tiles_tall / 2 {
-                    top_right_quad += 1;
-                } else if *y > tiles_tall / 2 {
-                    bottom_right_quad += 1;
+            for line in &robot_pos {
+                if line
+                    .iter()
+                    .map(|f| if f == &'#' { 1 } else { 0 })
+                    .sum::<usize>()
+                    > 25
+                {
+                    display_matrix(&robot_pos);
+                    // println!("nr iterations : {}", nr_iterations);
+                    // pause();
+                    thread::sleep(Duration::from_millis(100));
                 }
             }
-        }
 
-        for line in &robot_pos {
-            if line
-                .iter()
-                .map(|f| if f == &'#' { 1 } else { 0 })
-                .sum::<usize>()
-                > 25
-            {
-                display_matrix(&robot_pos);
-                // println!("nr iterations : {}", nr_iterations);
-                // pause();
-                thread::sleep(Duration::from_millis(100));
-            }
+            nr_iterations += 1;
         }
-
-        nr_iterations += 1;
     }
 }
 
