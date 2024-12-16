@@ -1,5 +1,3 @@
-use crate::display_map::DisplayMap;
-
 pub struct Plot {
     id: char,
     original_pos: Vec<(usize, usize)>,
@@ -23,18 +21,6 @@ impl Plot {
         let area = &self.calculate_area();
         let sides = &self.calculate_sides();
 
-        if self.id == 'V' {
-            println!(
-                "fencing for {} = {} where a = {} and s = {}",
-                self.id,
-                area * sides,
-                area,
-                sides
-            );
-
-            DisplayMap::display(&self.map);
-        }
-
         area * sides
     }
 
@@ -42,39 +28,15 @@ impl Plot {
         let mut sides_count = 0;
         let mut arr = [None; 4];
 
-        let mut left = 0;
-        let mut right = 0;
-        let mut top = 0;
-        let mut bottom = 0;
-
         for (y, line) in self.map.iter().enumerate() {
             for (x, c) in line.iter().enumerate() {
                 if *c == self.id {
                     let sides = Plot::check_sides(&self.map, &(x, y));
 
-                    if self.id == 'V' {
-                        println!("pos: {:?} arr: {:?}", (x, y), sides);
-                    }
-
-                    if let Some(left_side) = sides[0] {
-                        if arr[0].is_none() || arr[0].is_some() && left_side != arr[0].unwrap() {
-                            arr[0] = Some(left_side);
-                            sides_count += 1;
-                            left += 1;
-                        }
-                    }
-                    if let Some(right_side) = sides[1] {
-                        if arr[1].is_none() || arr[1].is_some() && right_side != arr[1].unwrap() {
-                            arr[1] = Some(right_side);
-                            sides_count += 1;
-                            right += 1;
-                        }
-                    }
                     if let Some(top_side) = sides[2] {
                         if arr[2].is_none() || arr[2].is_some() && top_side != arr[2].unwrap() {
                             arr[2] = Some(top_side);
                             sides_count += 1;
-                            top += 1;
                         }
                     } else {
                         arr[2] = None;
@@ -83,20 +45,44 @@ impl Plot {
                         if arr[3].is_none() || arr[3].is_some() && bottom_side != arr[3].unwrap() {
                             arr[3] = Some(bottom_side);
                             sides_count += 1;
-                            bottom += 1;
                         }
                     } else {
                         arr[3] = None;
                     }
+                } else {
+                    arr[2] = None;
+                    arr[3] = None;
                 }
             }
         }
 
-        if self.id == 'V' {
-            println!(
-                "left: {} | right: {} | top: {} | bottom: {}",
-                left, right, top, bottom
-            );
+        for x in 0..self.map[0].len() - 1 {
+            for y in 0..self.map.len() - 1 {
+                let c = self.map[y][x];
+                if c == self.id {
+                    let sides = Plot::check_sides(&self.map, &(x, y));
+
+                    if let Some(left_side) = sides[0] {
+                        if arr[0].is_none() || arr[0].is_some() && left_side != arr[0].unwrap() {
+                            arr[0] = Some(left_side);
+                            sides_count += 1;
+                        }
+                    } else {
+                        arr[0] = None;
+                    }
+                    if let Some(right_side) = sides[1] {
+                        if arr[1].is_none() || arr[1].is_some() && right_side != arr[1].unwrap() {
+                            arr[1] = Some(right_side);
+                            sides_count += 1;
+                        }
+                    } else {
+                        arr[1] = None;
+                    }
+                } else {
+                    arr[0] = None;
+                    arr[1] = None;
+                }
+            }
         }
 
         sides_count
