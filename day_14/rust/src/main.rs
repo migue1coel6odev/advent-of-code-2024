@@ -1,9 +1,8 @@
-use std::{collections::HashMap, thread, time::Duration};
+use std::{thread, time::Duration};
 
 use aoc_utils::{
-    command::pause,
     display::{display_char_matrix, display_matrix},
-    file_read::{read_file_as_string, read_file_by_line},
+    file_read::read_file_as_string,
 };
 use regex::Regex;
 use robot::Robot;
