@@ -19,6 +19,17 @@ impl Land {
         }
     }
 
+    pub fn calculate_fencing(&self) -> usize {
+        self.plots.iter().map(|plot| plot.calculate_fencing()).sum()
+    }
+
+    pub fn calculate_fencing_sides(&self) -> usize {
+        self.plots
+            .iter()
+            .map(|plot| plot.calculate_fencing_sides())
+            .sum()
+    }
+
     pub fn map_plots(&mut self) {
         let mut mapped_land = self.land.clone();
 
@@ -38,12 +49,12 @@ impl Land {
                 break;
             }
 
-            DisplayMap::display(&mapped_land);
+            // DisplayMap::display(&mapped_land);
 
-            let mut stdout = stdout();
-            stdout.write(b"Press Enter to continue...").unwrap();
-            stdout.flush().unwrap();
-            stdin().read(&mut [0]).unwrap();
+            // let mut stdout = stdout();
+            // stdout.write(b"Press Enter to continue...").unwrap();
+            // stdout.flush().unwrap();
+            // stdin().read(&mut [0]).unwrap();
         }
     }
 

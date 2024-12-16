@@ -10,7 +10,8 @@ fn main() {
     let mut land = Land::new(read_file());
     land.map_plots();
 
-    println!("Nr plots: {}", land.plots.len())
+    println!("Nr plots: {}", &land.calculate_fencing());
+    println!("Nr plots: {}", &land.calculate_fencing_sides())
 }
 
 fn read_file() -> Vec<Vec<char>> {
