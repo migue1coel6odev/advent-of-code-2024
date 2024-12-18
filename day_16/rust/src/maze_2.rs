@@ -1,18 +1,13 @@
-use std::{cmp::Ordering, collections::HashMap, thread, time::Duration};
+use std::collections::{HashMap, HashSet};
 
 use aoc_utils::{
-    check::{
-        check_distance_between_points, check_euclidian_distance_between_points,
-        check_surroundings_char, MatrixPos,
-    },
-    command::pause,
-    display::display_matrix,
+    check::{check_surroundings_char, MatrixPos},
     find::find_coord_of_char,
 };
 
 use crate::constants::Facing;
 
-pub struct Maze_2 {
+pub struct Maze2 {
     map: Vec<Vec<char>>,
     start_pos: (usize, usize),
     start_facing: Facing,
@@ -20,7 +15,7 @@ pub struct Maze_2 {
     common_positions: HashMap<(usize, usize), usize>,
 }
 
-impl Maze_2 {
+impl Maze2 {
     pub fn new(map: &Vec<Vec<char>>, start_facing: Facing) -> Self {
         Self {
             start_pos: find_coord_of_char(&map, &'S').unwrap(),
@@ -31,17 +26,13 @@ impl Maze_2 {
         }
     }
 
-    pub fn find_best_path(&mut self) -> Vec<usize> {
+    pub fn find_best_path(&mut self) -> usize {
         self.queue
             .push((self.start_pos, self.start_facing, 0, vec![]));
 
         let mut possible_results = vec![];
 
         loop {
-            // display_matrix(&self.map);
-            // thread::sleep(Duration::from_millis(5));
-            // pause();
-
             if self.queue.len() == 0 {
                 break;
             }
@@ -51,16 +42,22 @@ impl Maze_2 {
             let item = self.queue.remove(0);
             if let Some(val) = self.next_path(item.0, item.1, item.2, item.3) {
                 possible_results.push(val);
-                break;
             }
         }
-        display_matrix(&self.map);
 
-        println!("{:?}", possible_results);
+        let min = possible_results.iter().map(|(val, _)| *val).min().unwrap();
 
-        // println!("fastest: {}", possible_results.iter().min().unwrap());
+        let mut hashset: HashSet<(usize, usize)> = HashSet::new();
 
-        vec![]
+        possible_results
+            .iter()
+            .filter(|(val, _)| *val == min)
+            .flat_map(|(_, vec)| vec.clone())
+            .for_each(|pos| {
+                hashset.insert(pos);
+            });
+
+        hashset.len()
     }
 
     fn next_path(
@@ -80,7 +77,7 @@ impl Maze_2 {
             &self.map,
             start_pos,
             vec!['.', 'E'],
-            vec![Maze_2::map_matrix_pos_inverted(&start_facing)],
+            vec![Maze2::map_matrix_pos_inverted(&start_facing)],
         );
 
         if surroundings.is_none() {
@@ -89,7 +86,7 @@ impl Maze_2 {
 
         let surroundings = surroundings.unwrap();
         if surroundings.len() == 1 {
-            Maze_2::mark_as_visited(&mut self.map, &start_pos);
+            Maze2::mark_as_visited(&mut self.map, &start_pos);
         } else {
             self.common_positions
                 .entry(start_pos)
@@ -101,10 +98,11 @@ impl Maze_2 {
             .iter()
             .for_each(|(matrix_pos, pos, character)| {
                 if character == &'E' {
+                    previous_pos.push(*pos);
                     result = Some((start_cost, previous_pos.clone()));
                 } else {
-                    let new_facing = Maze_2::map_facing(matrix_pos);
-                    let facing_cost = Maze_2::check_facing_cost(&start_facing, &new_facing);
+                    let new_facing = Maze2::map_facing(matrix_pos);
+                    let facing_cost = Maze2::check_facing_cost(&start_facing, &new_facing);
                     self.queue.push((
                         *pos,
                         new_facing,
