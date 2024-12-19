@@ -1,4 +1,4 @@
-use aoc_utils::command::pause;
+use crate::reverse_computer::ReverseComputer;
 
 pub struct Computer {
     register_a: usize,
@@ -85,6 +85,18 @@ impl Computer {
             }
             _ => (),
         }
+    }
+
+    pub fn reverse(&mut self) -> usize {
+        let mut reverse_computer = ReverseComputer::new(
+            self.register_a,
+            self.register_b,
+            self.register_c,
+            self.program.clone(),
+            self.pointer,
+            self.result.clone(),
+        );
+        reverse_computer.run()
     }
 
     fn separate_number(number: usize) -> Vec<usize> {

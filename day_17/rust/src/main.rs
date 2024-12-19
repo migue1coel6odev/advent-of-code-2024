@@ -3,6 +3,7 @@ use computer::Computer;
 use regex::Regex;
 
 mod computer;
+mod reverse_computer;
 
 fn main() {
     println!("| PART 1 | {}", part_1("input.txt"));
@@ -51,7 +52,7 @@ mod tests {
 
     #[test]
     fn test_part_1() {
-        let result = part_1("test.txt");
+        let result = part_1("test1.txt");
         assert_eq!(result, "4,6,3,5,6,3,5,2,1,0");
     }
 
