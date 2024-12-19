@@ -3,3 +3,4 @@ pub mod command;
 pub mod display;
 pub mod file_read;
 pub mod find;
+pub mod maze;
