@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use aoc_utils::{
     command::pause,
     coord::{self, Coord},
-    display::{self, display_matrix, display_matrix_highlight},
+    display::{self, display_matrix, display_matrix_from_vec_coord, display_matrix_highlight},
     find::find_coord_of_char_as_coord,
     matrix::matrix::CharMatrix,
     maze::{maze_v2::Mazev2, maze_v3::Mazev3},
@@ -52,6 +52,13 @@ impl Racev2 {
         let mut current_normal_path =
             self.race_normal_path.clone()[0..self.race_normal_path.len() - mark_next].to_vec();
 
+        /**
+         *
+         * TODO:
+         *
+         * ter em conta que o maze nao esta a verificar se o resultado final so tem 20 steps
+         * o maze esta a colocar em queue coordenadas duplicadas
+         */
         while current_normal_path.len() > 0 {
             self.race_normal_path[mark_next].mark_coord_as_visited(&mut new_map);
             mark_next += 1;
@@ -69,10 +76,19 @@ impl Racev2 {
                 vec!['.', 'E'],
                 vec!['#'],
                 'X',
-                restricted_coord,
+                restricted_coord.clone(),
             );
+            if coord.x == 54 && coord.y == 49 {
+                println!("here");
+                display_matrix_highlight(&new_map, vec![('O', vec![coord])]);
+                display_matrix_highlight(
+                    &new_map,
+                    vec![('O', vec![coord]), ('@', restricted_coord.clone())],
+                );
+                display_matrix_from_vec_coord(&new_map, restricted_coord);
+                pause();
+            }
             found_paths += maze.find_all_paths(max_paths).len();
-            display_matrix(&new_map);
         }
 
         found_paths

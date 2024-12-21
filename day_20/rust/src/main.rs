@@ -6,11 +6,8 @@ mod race;
 mod race_v2;
 
 fn main() {
-    let x: usize = 10;
-    let xx = x.sub(1);
-    println!("xx {}", xx);
     // println!("| PART 1 | Result = {}", part_1("input.txt", 100));
-    // println!("| PART 2 | Result = {}", part_2("input.txt", 100, 20));
+    println!("| PART 2 | Result = {}", part_2("input.txt", 100, 20));
 }
 
 #[allow(dead_code)]

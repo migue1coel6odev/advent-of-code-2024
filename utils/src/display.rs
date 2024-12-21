@@ -43,3 +43,24 @@ pub fn display_matrix_highlight<A: Display + PartialEq>(
     }
     println!("");
 }
+
+pub fn display_matrix_from_vec_coord(original_matrix: &Vec<Vec<char>>, coords: Vec<Coord>) {
+    let vec_x = coords.iter().map(|coord| coord.x).collect::<Vec<usize>>();
+    let max_x = *vec_x.iter().max().unwrap();
+    let min_x = *vec_x.iter().min().unwrap();
+
+    let vec_y = coords.iter().map(|coord| coord.y).collect::<Vec<usize>>();
+    let max_y = *vec_y.iter().max().unwrap();
+    let min_y = *vec_y.iter().min().unwrap();
+
+    let mut matrix = vec![vec![' '; (max_x - min_x) + 1]; (max_y - min_y) + 1];
+
+    for coord in coords {
+        let new_coord = Coord {
+            x: coord.x - min_x,
+            y: coord.y - min_y,
+        };
+        new_coord.mark_coord_as_visited_with(&mut matrix, coord.check_char_at(&original_matrix));
+    }
+    display_matrix(&matrix);
+}

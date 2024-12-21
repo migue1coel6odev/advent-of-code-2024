@@ -1,5 +1,3 @@
-use std::ops::Sub;
-
 use crate::check::MatrixPos;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
