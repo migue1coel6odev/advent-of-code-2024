@@ -8,10 +8,7 @@ pub struct Coord {
 
 impl Coord {
     pub fn exists_in_matrix(&self, matrix: &Vec<Vec<char>>) -> bool {
-        return self.x > 0
-            && self.y > 0
-            && self.x < matrix[0].len() - 1
-            && self.y < matrix.len() - 1;
+        return self.x <= matrix[0].len() - 1 && self.y <= matrix.len() - 1;
     }
 
     pub fn check_char_at(&self, matrix: &Vec<Vec<char>>) -> char {

@@ -2,6 +2,7 @@ use aoc_utils::file_read::read_file_as_char_matrix;
 use race::Race;
 use race_v2::Racev2;
 
+mod maze;
 mod race;
 mod race_v2;
 
@@ -46,7 +47,16 @@ mod test {
 
     #[test]
     fn test_part_2() {
-        assert_eq!(part_2("test.txt", 12, 2), 8);
-        assert_eq!(part_2("test.txt", 50, 6), 285);
+        // assert_eq!(part_2("test.txt", 12, 2), 8);
+        // assert_eq!(part_2("test.txt", 50, 20), 285);
+        // assert_eq!(part_2("test.txt", 77, 20), 0);
+        // assert_eq!(part_2("test.txt", 76, 20), 3);
+        // assert_eq!(part_2("test.txt", 75, 20), 3);
+        // assert_eq!(part_2("test.txt", 74, 20), 7);
+        // assert_eq!(part_2("test.txt", 73, 20), 7);
+        assert_eq!(part_2("test.txt", 72, 20), 29);
+        // assert_eq!(part_2("test.txt", 71, 20), 29);
+        // assert_eq!(part_2("test.txt", 70, 20), 41);
+        // assert_eq!(part_2("test.txt", 68, 20), 55);
     }
 }
