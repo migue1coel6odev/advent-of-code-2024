@@ -47,7 +47,6 @@ impl Racev2 {
         for coord in self.race_normal_path[0..mark_next].to_vec() {
             coord.mark_coord_as_visited(&mut new_map);
         }
-        let mut found_paths = 0;
 
         let mut current_normal_path =
             self.race_normal_path.clone()[0..self.race_normal_path.len() - mark_next].to_vec();
@@ -57,24 +56,67 @@ impl Racev2 {
             mark_next += 1;
             let coord = current_normal_path.remove(0);
             let cm = CharMatrix::new(new_map.clone());
-            let (restricted_coord, max_paths) = cm.find_reachable_area(
-                coord,
-                self.max_cheat_depth,
-                vec!['.', 'E', '#', 'X'],
-                vec!['.', 'E'],
-            );
+
             let maze = Mazev3::new(
                 &new_map,
                 &coord,
-                vec!['.', 'E'],
+                '.',
                 vec!['#'],
                 'X',
-                restricted_coord,
+                cm.find_reachable_area(coord, 20),
             );
-            found_paths += maze.find_all_paths(max_paths).len();
-            display_matrix(&new_map);
+            let res = maze.find_all_paths().len();
+
+            // self.check_next_pos(&new_map, &coord);
         }
 
-        found_paths
+        self.possible_cheats.len()
+    }
+
+    fn check_next_pos(&mut self, current_map: &Vec<Vec<char>>, current_coord: &Coord) {
+        let surroundings = current_coord.check_surroundings(&current_map, vec!['#']);
+
+        let initial_val = self.possible_cheats.len();
+        for (_, coord) in surroundings {
+            self.check_for_cheats(current_map, current_coord, coord, 1);
+        }
+        if initial_val != self.possible_cheats.len() {
+            self.cache_dead_end.push(*current_coord);
+            println!("current cache size: {}", self.cache_dead_end.len());
+        }
+    }
+
+    fn check_for_cheats(
+        &mut self,
+        current_map: &Vec<Vec<char>>,
+        original_coord: &Coord,
+        current_coord: Coord,
+        current_depth: usize,
+    ) {
+        if current_depth == self.max_cheat_depth || self.cache_dead_end.contains(&current_coord) {
+            return ();
+        }
+
+        let surroundings = current_coord.check_surroundings(&current_map, vec!['#', '.', 'E']);
+
+        for (_, coord) in surroundings {
+            if coord.check_char_at(&current_map) != '#' {
+                self.possible_cheats.insert((*original_coord, coord));
+            } else {
+                let mut new_map = current_map.clone();
+                coord.mark_coord_as_visited(&mut new_map);
+                self.check_for_cheats(&new_map, original_coord, coord, current_depth + 1);
+            }
+        }
+    }
+
+    pub fn display_possible_cheats(&self) {
+        for (start_cheat, end_cheat) in &self.possible_cheats {
+            let mut map = self.race_map.clone();
+            start_cheat.mark_coord_as_visited(&mut map);
+            end_cheat.mark_coord_as_visited(&mut map);
+            display_matrix(&map);
+            pause();
+        }
     }
 }
