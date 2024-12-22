@@ -1,6 +1,6 @@
-use aoc_utils::{
-    check::check_surroundings_char, command::pause, coord::Coord, display::display_matrix,
-};
+use std::collections::HashSet;
+
+use aoc_utils::{coord::Coord, display::display_matrix};
 
 pub struct Maze<'a, 'b> {
     map: &'a Vec<Vec<char>>,
@@ -8,7 +8,6 @@ pub struct Maze<'a, 'b> {
     end_char: Vec<char>,
     marker: char,
     path: Vec<char>,
-    restricted_coord: Vec<Coord>,
 }
 
 impl<'a, 'b> Maze<'a, 'b> {
@@ -18,7 +17,6 @@ impl<'a, 'b> Maze<'a, 'b> {
         end_char: Vec<char>,
         path: Vec<char>,
         marker: char,
-        restricted_coord: Vec<Coord>,
     ) -> Self {
         Self {
             map,
@@ -26,7 +24,6 @@ impl<'a, 'b> Maze<'a, 'b> {
             end_char,
             path,
             marker,
-            restricted_coord,
         }
     }
 
@@ -34,85 +31,96 @@ impl<'a, 'b> Maze<'a, 'b> {
         &self,
         max_paths: usize,
         max_depth: usize,
-        vec: Vec<Coord>,
-    ) -> Vec<Vec<Coord>> {
-        let mut temp_map = self.map.clone();
-        let mut found_paths = vec![];
-        let mut queue: Vec<(Coord, Vec<Coord>)> =
-            vec![(self.start_pos.clone(), vec![self.start_pos.clone()])];
-        self.mark_visited(&mut temp_map, self.start_pos);
-        let mut vec = vec.clone();
-        let mut current_path_length = 1;
+        vec_coord_to_add: Vec<Coord>,
+    ) -> usize {
+        let mut found_paths = 0;
+        let mut queue: Vec<Vec<Coord>> = vec![vec![*self.start_pos]];
+        let mut current_map = self.map.clone();
+        let mut current_iteration = 0;
+        let mut vec_coord_to_add = vec_coord_to_add.clone();
+        let mut visited: Vec<Coord> = vec![];
 
-        loop {
-            if queue.len() == 0 {
-                break;
+        while queue.len() > 0 {
+            let current_iteration_coords = queue.remove(0);
+
+            let mut next_iteration_coords: HashSet<Coord> = HashSet::new();
+            for coord in current_iteration_coords {
+                found_paths += self.check_next_point(
+                    &mut current_map,
+                    coord,
+                    &mut next_iteration_coords,
+                    &mut visited,
+                );
             }
-            if found_paths.len() == max_paths {
-                break;
+            if next_iteration_coords.len() > 0 {
+                queue.push(
+                    next_iteration_coords
+                        .iter()
+                        .map(|f| *f)
+                        .collect::<Vec<Coord>>(),
+                );
             }
 
-            let (point, path) = queue.remove(0);
-            if current_path_length != path.len() {
-                if vec.len() > 0 {
-                    if current_path_length > 0 {
-                        self.mark_visited(&mut temp_map, &vec.remove(0));
-                    }
-                }
-            }
-            if temp_map
-                .iter()
-                .find(|line| line.iter().filter(|c| self.end_char.contains(c)).count() > 0)
-                .is_none()
+            current_iteration += 1;
+            if found_paths == max_paths
+                || current_iteration == max_depth
+                || vec_coord_to_add.len() == 0
+                || !self.check_is_possible(&current_map)
             {
                 break;
             }
-            current_path_length = path.len();
-            if current_path_length > max_depth {
-                break;
-            }
-            let val = self.check_next_point(&mut queue, &mut temp_map, point, path);
-            if !val.is_empty() {
-                val.iter().for_each(|v| {
-                    found_paths.push(v.clone());
-                });
-            }
+
+            self.walk_through_next_coord_in_iteration(&mut current_map, &mut vec_coord_to_add);
         }
+
         found_paths
     }
 
     fn check_next_point(
         &self,
-        queue: &mut Vec<(Coord, Vec<Coord>)>,
         map: &mut Vec<Vec<char>>,
-        point: Coord,
-        path: Vec<Coord>,
-    ) -> Vec<Vec<Coord>> {
-        let mut values_found = vec![];
+        coord: Coord,
+        next_iteration_coords: &mut HashSet<Coord>,
+        visited: &mut Vec<Coord>,
+    ) -> usize {
+        let mut ends_found = 0;
+        let possible_next_coords = coord.check_surroundings_v2(&map);
 
-        let mut lookfor = self.path.clone();
-        let mut end_chars = self.end_char.clone();
-        lookfor.append(&mut end_chars);
-        if let Some(surrondings) =
-            check_surroundings_char(&map, (point.x, point.y), lookfor, vec![])
-        {
-            for (_, pos, _) in surrondings {
-                let point = Coord { x: pos.0, y: pos.1 };
-                if self.restricted_coord.contains(&point) {
-                    let mut path = path.clone();
-                    path.push(point);
+        if possible_next_coords.len() == 0 {
+            return 0;
+        }
 
-                    if self.end_char.contains(&point.check_char_at(&map)) {
-                        values_found.push(path);
-                    } else {
-                        queue.push((Coord { x: pos.0, y: pos.1 }, path));
-                    }
-                    self.mark_visited(map, &point);
-                }
+        for next_coord in possible_next_coords {
+            if visited.contains(&next_coord) {
+                continue;
+            }
+            let char_at_coord = next_coord.check_char_at(&map);
+            visited.push(next_coord);
+            if self.end_char.contains(&char_at_coord) {
+                ends_found += 1;
+            }
+
+            if self.path.contains(&char_at_coord) {
+                next_iteration_coords.insert(next_coord);
             }
         }
 
-        values_found
+        ends_found
+    }
+
+    fn walk_through_next_coord_in_iteration(
+        &self,
+        mut map: &mut Vec<Vec<char>>,
+        vec_coord_to_add: &mut Vec<Coord>,
+    ) {
+        self.mark_visited(&mut map, &vec_coord_to_add.remove(0));
+    }
+
+    fn check_is_possible(&self, current_map: &Vec<Vec<char>>) -> bool {
+        current_map
+            .iter()
+            .find(|line| line.iter().filter(|c| self.end_char.contains(c)).count() > 0)
+            .is_some()
     }
 
     fn mark_visited(&self, map: &mut Vec<Vec<char>>, point: &Coord) {

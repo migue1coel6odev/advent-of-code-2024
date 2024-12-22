@@ -1,26 +1,18 @@
 use std::collections::HashMap;
 
-use aoc_utils::{
-    command::pause,
-    coord::{self, Coord},
-    display::{self, display_matrix},
-    find::find_coord_of_char_as_coord,
-    maze::points::Point,
-};
+use aoc_utils::{coord::Coord, find::find_coord_of_char_as_coord};
 
 pub struct Race {
     race_map: Vec<Vec<char>>,
     possible_cheats: Vec<(Coord, Coord)>,
     time_util_coord: HashMap<Coord, usize>,
     start_pos: Coord,
-    end_pos: Coord,
 }
 
 impl Race {
     pub fn new(race_map: Vec<Vec<char>>) -> Self {
         Self {
             start_pos: find_coord_of_char_as_coord(&race_map, &'S').unwrap(),
-            end_pos: find_coord_of_char_as_coord(&race_map, &'E').unwrap(),
             race_map,
             possible_cheats: vec![],
             time_util_coord: HashMap::new(),
@@ -59,8 +51,6 @@ impl Race {
             }
         }
 
-        println!("total time: {}", current_time);
-
         self.possible_cheats.len()
     }
 
@@ -91,19 +81,5 @@ impl Race {
         }
 
         next_coord
-    }
-
-    pub fn display_possible_cheats(&self) {
-        for (start_cheat, end_cheat) in &self.possible_cheats {
-            let mut map = self.race_map.clone();
-            start_cheat.mark_coord_as_visited(&mut map);
-            end_cheat.mark_coord_as_visited(&mut map);
-            print!(
-                "Time saving: {}",
-                self.calculate_time_saved_by_cheat(&(*start_cheat, *end_cheat))
-            );
-            display_matrix(&map);
-            pause();
-        }
     }
 }
