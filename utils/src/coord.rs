@@ -8,10 +8,7 @@ pub struct Coord {
 
 impl Coord {
     pub fn exists_in_matrix(&self, matrix: &Vec<Vec<char>>) -> bool {
-        return self.x > 0
-            && self.y > 0
-            && self.x < matrix[0].len() - 1
-            && self.y < matrix.len() - 1;
+        return self.x <= matrix[0].len() - 1 && self.y <= matrix.len() - 1;
     }
 
     pub fn check_char_at(&self, matrix: &Vec<Vec<char>>) -> char {
@@ -22,25 +19,38 @@ impl Coord {
         matrix[self.y][self.x] = 'X';
     }
 
-    pub fn move_in_dir(&self, direction: MatrixPos) -> Self {
+    pub fn mark_coord_as_visited_with(&self, matrix: &mut Vec<Vec<char>>, marker: char) {
+        matrix[self.y][self.x] = marker;
+    }
+
+    pub fn move_in_dir(&self, direction: MatrixPos) -> Option<Self> {
+        let mut x = None;
+        let mut y = None;
         match direction {
-            MatrixPos::UP => Coord {
-                x: self.x,
-                y: self.y - 1,
-            },
-            MatrixPos::DOWN => Coord {
-                x: self.x,
-                y: self.y + 1,
-            },
-            MatrixPos::LEFT => Coord {
-                x: self.x - 1,
-                y: self.y,
-            },
-            MatrixPos::RIGHT => Coord {
-                x: self.x + 1,
-                y: self.y,
-            },
+            MatrixPos::UP => {
+                x = Some(self.x);
+                y = self.y.checked_sub(1);
+            }
+            MatrixPos::DOWN => {
+                x = Some(self.x);
+                y = self.y.checked_add(1);
+            }
+            MatrixPos::LEFT => {
+                x = self.x.checked_sub(1);
+                y = Some(self.y);
+            }
+            MatrixPos::RIGHT => {
+                x = self.x.checked_add(1);
+                y = Some(self.y);
+            }
+        };
+        if x.is_some() && y.is_some() {
+            return Some(Coord {
+                x: x.unwrap(),
+                y: y.unwrap(),
+            });
         }
+        return None;
     }
 
     pub fn check_next_coord_by_dir(
@@ -48,9 +58,10 @@ impl Coord {
         matrix: &Vec<Vec<char>>,
         direction: MatrixPos,
     ) -> Option<(Coord, char)> {
-        let new_coord = self.move_in_dir(direction);
-        if new_coord.exists_in_matrix(matrix) {
-            return Some((new_coord, new_coord.check_char_at(matrix)));
+        if let Some(new_coord) = self.move_in_dir(direction) {
+            if new_coord.exists_in_matrix(matrix) {
+                return Some((new_coord, new_coord.check_char_at(matrix)));
+            }
         }
         return None;
     }
@@ -89,5 +100,18 @@ impl Coord {
         })
         .map(|(dir, next_coord)| (dir.clone(), next_coord.unwrap().0))
         .collect::<Vec<(MatrixPos, Coord)>>()
+    }
+
+    pub fn check_surroundings_v2(&self, matrix: &Vec<Vec<char>>) -> Vec<Coord> {
+        vec![
+            self.check_next_coord_by_dir(matrix, MatrixPos::UP),
+            self.check_next_coord_by_dir(matrix, MatrixPos::DOWN),
+            self.check_next_coord_by_dir(matrix, MatrixPos::LEFT),
+            self.check_next_coord_by_dir(matrix, MatrixPos::RIGHT),
+        ]
+        .iter()
+        .filter(|res| res.is_some())
+        .map(|next_coord| next_coord.unwrap().0)
+        .collect::<Vec<Coord>>()
     }
 }
