@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="EMPTY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/day_1/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_10/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_11/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_12/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_13/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_14/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_15/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_16/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_17/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_18/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_19/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_2/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_20/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_21/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_24/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_3/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_4/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_5/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_6/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_7/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_8/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/day_9/rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/utils/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/day_1/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_10/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_11/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_12/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_13/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_14/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_15/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_16/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_17/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_18/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_19/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_2/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_20/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_21/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_24/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_3/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_4/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_5/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_6/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_7/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_8/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/day_9/rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/utils/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
